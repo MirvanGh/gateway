@@ -2,6 +2,7 @@
 
 namespace Larabookir\Gateway;
 
+use Illuminate\Support\Facades\Config;
 use Larabookir\Gateway\Irankish\Irankish;
 use Larabookir\Gateway\Parsian\Parsian;
 use Larabookir\Gateway\Paypal\Paypal;
@@ -123,11 +124,19 @@ class GatewayResolver
 	/**
 	 * Create new object from port class
 	 *
-	 * @param int $port
+	 * @param int   $port
+	 * @param  int  $id gateway id in db
+	 *
 	 * @throws PortNotFoundException
 	 */
-	function make($port)
+	function make($port ,int $id = null)
     {
+    	if(!is_null($id)){
+			$gateway = DB::table('gateways')->find($id); // get gateway data
+			$port = $gateway->name;
+			Config::set('gateway.'.$gateway->name, $gateway->config); // overwrite config in memory
+			$this->config = app('config'); // refresh config in package
+		}
         if ($port InstanceOf Mellat) {
             $name = Enum::MELLAT;
         } elseif ($port InstanceOf Parsian) {
