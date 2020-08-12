@@ -132,7 +132,9 @@ class GatewayResolver
 	function make($port ,int $id = null)
     {
     	if(!is_null($id)){
-			$gateway = DB::table('gateways')->find($id); // get gateway data
+			$gateway = DB::table('gateways')->withCasts([
+				'config' => 'json'
+			])->find($id); // get gateway data
 			$port = $gateway->name;
 			Config::set('gateway.'.$gateway->name, $gateway->config); // overwrite config in memory
 			$this->config = app('config'); // refresh config in package
